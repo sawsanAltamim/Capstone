@@ -4,9 +4,6 @@ import com.example.capstone1.Model.Merchant;
 import com.example.capstone1.Model.MerchantStock;
 import com.example.capstone1.Model.Product;
 import com.example.capstone1.Model.User;
-import com.example.capstone1.Service.MerchantService;
-import com.example.capstone1.Service.MerchantStockService;
-import com.example.capstone1.Service.ProductService;
 import com.example.capstone1.Service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +20,6 @@ import java.util.ArrayList;
 public class UserController {
 
     private final UserService userService;
-    private final ProductService productService;
-    private final MerchantStockService merchantStockService;
-    private final MerchantService merchantService;
 
     @GetMapping("/get")
     public ResponseEntity getAllUser() {
@@ -74,6 +68,19 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(buy));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(buy));
+        }
+    }
+
+    // Ideas for extra credit
+    // process of returning the product to the merchant so that the credit is returned to the customer and the product is returned to the  merchant stock
+    @PutMapping("/returnProduct/{userId}/{productId}/{merchantId}")
+    public ResponseEntity returnProduct(@PathVariable String userId, @PathVariable String productId, @PathVariable String merchantId) {
+        String returnProd = userService.returnProduct(userId, productId, merchantId);
+
+        if (returnProd.equals("Product returned successfully")) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(returnProd));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(returnProd));
         }
     }
 }

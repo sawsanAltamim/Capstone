@@ -60,6 +60,18 @@ public class UserService {
         return false;
     }
 
+    public boolean returnAmountToBalance(String userId, double amount) {
+        for (User user : users) {
+            if (user.getId().equals(userId)) {
+                double currentBalance = user.getBalance();
+                    user.setBalance(currentBalance + amount);
+                    return true;
+                }
+                return false;
+            }
+        return false;
+    }
+
     public String buyProduct(String userId, String productId, String merchantId) {
         User user = this.getUserId(userId);
         Product product = productService.getProductId(productId);
@@ -87,6 +99,29 @@ public class UserService {
         }
     }
 
+
+    // Ideas for extra credit
+    public String returnProduct(String userId, String productId, String merchantId) {
+        User user = getUserId(userId);
+        Product product = productService.getProductId(productId);
+        Merchant merchant = merchantService.getMerchantId(merchantId);
+
+        if (user == null) {
+            return ("User not found");
+        } else if (product == null) {
+            return ("Product not found");
+        } else if (merchant == null) {
+            return ("Merchant not found");
+        } else {
+            boolean isReturnProduct = returnAmountToBalance(userId, product.getPrice());
+            boolean isStock = merchantStockService.returnToStock(productId, merchantId, 1);
+
+            if (isReturnProduct && isStock) {
+                return ("Product returned successfully");
+            }
+            return ("Failed to returned product");
+        }
+    }
     public User getUserId(String userId) {
         for (User user : users) {
             if (user.getId().equals(userId)) {
