@@ -1,4 +1,8 @@
 package com.example.capstone1.Service;
+import com.example.capstone1.ApiResponse.ApiResponse;
+import com.example.capstone1.Model.Merchant;
+import com.example.capstone1.Model.MerchantStock;
+import com.example.capstone1.Model.Product;
 import com.example.capstone1.Model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -8,6 +12,9 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final ProductService productService;
+    private final MerchantStockService merchantStockService;
+    private final MerchantService merchantService;
 
     ArrayList<User> users = new ArrayList<>();
 
@@ -42,8 +49,8 @@ public class UserService {
     public boolean deductBalance(String userId, double amount) {
         for (User user : users) {
             if (user.getId().equals(userId)) {
-                double currentBalance= user.getBalance();
-                if ( currentBalance >= amount) {
+                double currentBalance = user.getBalance();
+                if (currentBalance >= amount) {
                     user.setBalance(currentBalance - amount);
                     return true;
                 }
@@ -51,6 +58,33 @@ public class UserService {
             }
         }
         return false;
+    }
+
+    public String buyProduct(String userId, String productId, String merchantId) {
+        User user = this.getUserId(userId);
+        Product product = productService.getProductId(productId);
+        Merchant merchant = merchantService.getMerchantId(merchantId);
+        MerchantStock merchantStock = merchantStockService.getMerchantStock(productId, merchantId);
+
+        if (user == null) {
+            return ("User not found");
+        } else if (product == null) {
+            return ("Product not found");
+        } else if (merchant == null) {
+            return ("Merchant not found");
+        } else if (merchantStock == null || merchantStock.getStock() <= 0) {
+            return ("Product out of stock");
+        } else if (user.getBalance() < product.getPrice()) {
+            return ("Insufficient balance");
+        } else {
+            boolean isDeducted = deductBalance(userId, product.getPrice());
+            boolean isReduced = merchantStockService.reduceStock(productId, merchantId, 1);
+
+            if (isDeducted && isReduced) {
+                return ("Product bought successfully");
+            }
+            return ("Failed to buy product");
+        }
     }
 
     public User getUserId(String userId) {

@@ -67,33 +67,13 @@ public class UserController {
 
     @PutMapping("/buyProduct/{userId}/{productId}/{merchantId}")
     public ResponseEntity buyProduct(@PathVariable String userId, @PathVariable String productId, @PathVariable String merchantId) {
-        User user = userService.getUserId(userId);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse("User not found"));
-        }
-        Product product = productService.getProductId(productId);
-        if (product == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse("Product not found"));
-        }
-        Merchant merchant = merchantService.getMerchantId(merchantId);
-        if (merchant == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse("Merchant not found"));
-        }
-        MerchantStock merchantStock = merchantStockService.getMerchantStock(productId, merchantId);
-        if (merchantStock == null || merchantStock.getStock() <= 0) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Product out of stock");
-        }
-        if(user.getBalance() < product.getPrice()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Insufficient balance");
-        }
-        boolean isDeducted = userService.deductBalance(userId, product.getPrice());
-        boolean isReduced = merchantStockService.reduceStock(productId, merchantId, 1);
 
-        if (isDeducted && isReduced) {
-            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Product bought successfully"));
-        }
+        String buy = userService.buyProduct(userId, productId, merchantId);
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse("failed"));
+        if (buy.equals("Product bought successfully")) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse(buy));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse(buy));
+        }
     }
-
 }

@@ -45,9 +45,4 @@ public class ProductService {
         return null;
     }
 }
-/*
-    public Product getProductById(String productId) {
-        return getProductById(productId);
-    }
-*/
 
