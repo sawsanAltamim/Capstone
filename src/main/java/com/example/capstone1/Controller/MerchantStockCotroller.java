@@ -69,24 +69,3 @@ public class MerchantStockCotroller {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("Product or merchant not found"));
     }
 }
-   /* @PostMapping("/addStock/{productId}/{merchantId}/{amount}")
-    public ResponseEntity addStock(@PathVariable String productId, @PathVariable String merchantId, @PathVariable Integer amount){
-        ArrayList<MerchantStock> merchantStocks = merchantStockService.getAllMerchantStocks();
-        MerchantStock target = null;
-        for(MerchantStock merchantStock : merchantStocks){
-            if(merchantStock.getProductID().equals(productId) && merchantStock.getMerchantID().equals(merchantId)){
-                target = merchantStock;
-                break;
-            }
-        }
-        if(target == null){
-            // If the merchant stock doesn't exist, create a new one with the given product and merchant IDs
-            target = new MerchantStock(UUID.randomUUID().toString(), productId, merchantId, amount);
-            merchantStockService.addMerchantStock(target);
-        } else {
-            // If the merchant stock exists, increase the stock by the given amount
-            target.setStock(target.getStock() + amount);
-            merchantStockService.updateMerchantStock(target.getId(), target);
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Merchant stock added successfully"));
-    }*/
